@@ -2,6 +2,8 @@ import streamlit as st
 import requests
 import plotly.graph_objects as go
 import numpy as np
+import datetime
+
 GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwQwu4I2VyAVYLWCkowgghNGN1HEqA4-qzK1d19MzelOH5TRxWlFSYlVdeGhrb3futT/exec"
 
 # --------------------------------------------------
@@ -42,14 +44,11 @@ institutional = st.slider("🏫 Institutional Issues", 1, 5, 3)
 st.markdown("---")
 
 # --------------------------------------------------
-# RISK ASSESSMENT BUTTON
+# SUBMIT BUTTON
 # --------------------------------------------------
 if st.button("🔍 Assess Dropout Risk"):
 
-    # ----------------------------------------------
-    # RULE-BASED WEIGHTING (DERIVED FROM ML RESULTS)
-    # Financial > Psychological > Social > Institutional
-    # ----------------------------------------------
+    # ---------------- Risk Calculation ----------------
     risk_score = (
         0.40 * financial +
         0.30 * psychological +
@@ -57,11 +56,8 @@ if st.button("🔍 Assess Dropout Risk"):
         0.10 * institutional
     )
 
-    risk_score_normalized = risk_score / 5  # scale to 0–1
+    risk_score_normalized = risk_score / 5
 
-    # ----------------------------------------------
-    # RISK LEVEL
-    # ----------------------------------------------
     if risk_score_normalized < 0.40:
         risk_label = "Low Risk"
         color = "green"
@@ -72,20 +68,15 @@ if st.button("🔍 Assess Dropout Risk"):
         risk_label = "High Risk"
         color = "red"
 
-    # ----------------------------------------------
-    # RESULT DISPLAY
-    # ----------------------------------------------
+    # ---------------- Display Result ----------------
     st.subheader("📊 Risk Assessment Result")
     st.markdown(
         f"**Risk Level:** <span style='color:{color}; font-weight:bold'>{risk_label}</span>",
         unsafe_allow_html=True
     )
-
     st.write(f"**Risk Score:** {risk_score_normalized:.2f}")
 
-    # ----------------------------------------------
-    # GAUGE METER
-    # ----------------------------------------------
+    # ---------------- Gauge ----------------
     fig = go.Figure(go.Indicator(
         mode="gauge+number",
         value=risk_score_normalized * 100,
@@ -100,31 +91,23 @@ if st.button("🔍 Assess Dropout Risk"):
             ]
         }
     ))
-
     st.plotly_chart(fig, use_container_width=True)
 
-    # ----------------------------------------------
-    # DOMINANT FACTORS
-    # ----------------------------------------------
+    # ---------------- Dominant Factors ----------------
     st.subheader("🔎 Dominant Contributing Factors")
-
     factors = {
         "Financial": financial,
         "Psychological": psychological,
         "Social": social,
         "Institutional": institutional
     }
-
     sorted_factors = sorted(factors.items(), key=lambda x: x[1], reverse=True)
 
     for factor, score in sorted_factors:
         st.write(f"- **{factor} Factor** (Score: {score})")
 
-    # ----------------------------------------------
-    # ACTIONABLE RECOMMENDATIONS
-    # ----------------------------------------------
+    # ---------------- Recommendations ----------------
     st.subheader("✅ Recommended Support Actions")
-
     top_factor = sorted_factors[0][0]
 
     if top_factor == "Financial":
@@ -145,7 +128,30 @@ if st.button("🔍 Assess Dropout Risk"):
         st.write("- Administrative support")
 
     st.info(
-        "Note: This system provides early-warning risk assessment based on dominant factors "
-        "identified through machine learning analysis. It does not claim deterministic prediction."
+        "Note: This system provides early-warning risk assessment based on dominant factors. "
+        "It does not claim deterministic prediction."
     )
 
+    # --------------------------------------------------
+    # SAVE DATA TO GOOGLE SHEET (IMPORTANT PART)
+    # --------------------------------------------------
+    payload = {
+        "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "gender": gender,
+        "level": level,
+        "financial": financial,
+        "psychological": psychological,
+        "social": social,
+        "institutional": institutional,
+        "risk_score": round(risk_score_normalized, 2),
+        "risk_label": risk_label
+    }
+
+    try:
+        response = requests.post(GOOGLE_SCRIPT_URL, json=payload)
+        if response.status_code == 200:
+            st.success("✅ Data saved successfully to Google Sheet")
+        else:
+            st.error("❌ Failed to save data to Google Sheet")
+    except Exception as e:
+        st.error(f"Error: {e}")
