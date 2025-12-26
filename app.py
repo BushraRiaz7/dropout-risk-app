@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 import numpy as np
 import datetime
 
-GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwQwu4I2VyAVYLWCkowgghNGN1HEqA4-qzK1d19MzelOH5TRxWlFSYlVdeGhrb3futT/exec"
+GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxehGkVwfVZBOkAkYwTYv3mFieWtowqUbEDOe4HSbHM6CSyAKWUvg66hio3CimuV2DpDQ/exec"
 
 # --------------------------------------------------
 # PAGE CONFIG
@@ -155,3 +155,4 @@ if st.button("🔍 Assess Dropout Risk"):
             st.error("❌ Failed to save data to Google Sheet")
     except Exception as e:
         st.error(f"Error: {e}")
+
