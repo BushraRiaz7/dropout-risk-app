@@ -1,6 +1,8 @@
 import streamlit as st
+import requests
 import plotly.graph_objects as go
 import numpy as np
+GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylY3D-dYjatvJ6W8Fw3mG1UiUF5CCLpsRRmjLz5HRebtdp5Mfff9FZn9c4ykjMPoR7RQ/exec"
 
 # --------------------------------------------------
 # PAGE CONFIG
