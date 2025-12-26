@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 import plotly.graph_objects as go
 import numpy as np
-GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwZeBN923Ci4PgOAPLfcvkLlfKbemHJCUO5qNJ6moQqe7KfPyBo4rMPOe9Hz5q0Zn2V4Q/exec"
+GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwQwu4I2VyAVYLWCkowgghNGN1HEqA4-qzK1d19MzelOH5TRxWlFSYlVdeGhrb3futT/exec"
 
 # --------------------------------------------------
 # PAGE CONFIG
@@ -148,3 +148,4 @@ if st.button("🔍 Assess Dropout Risk"):
         "Note: This system provides early-warning risk assessment based on dominant factors "
         "identified through machine learning analysis. It does not claim deterministic prediction."
     )
+
